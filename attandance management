@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure for each student node
+typedef struct Student {
+    int rollNo;
+    char name[100];
+    int isPresent;
+    struct Student* next;
+} Student;
+
+Student* head = NULL;
+
+// Function to add a student to the list
+void addStudent(int rollNo, char name[]) {
+    Student* newStudent = (Student*)malloc(sizeof(Student));
+    newStudent->rollNo = rollNo;
+    strcpy(newStudent->name, name);
+    newStudent->isPresent = 0;
+    newStudent->next = NULL;
+
+    if (head == NULL) {
+        head = newStudent;
+    } else {
+        Student* temp = head;
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = newStudent;
+    }
+    printf("Student added successfully.\n");
+}
+
+// Function to mark attendance
+void markAttendance(int rollNo, int presence) {
+    Student* temp = head;
+    while (temp != NULL) {
+        if (temp->rollNo == rollNo) {
+            temp->isPresent = presence;
+            printf("Attendance marked for %s.\n", temp->name);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Student with roll number %d not found.\n", rollNo);
+}
+
+// Function to display attendance
+void displayAttendance() {
+    Student* temp = head;
+    printf("\nAttendance List:\n");
+    printf("Roll No\tName\t\tStatus\n");
+    while (temp != NULL) {
+        printf("%d\t%s\t\t%s\n", temp->rollNo, temp->name,
+               temp->isPresent ? "Present" : "Absent");
+        temp = temp->next;
+    }
+}
+
+// Function to free memory
+void freeList() {
+    Student* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    int choice, roll, presence;
+    char name[100];
+
+    do {
+        printf("\n--- Attendance Management Menu ---\n");
+        printf("1. Add Student\n");
+        printf("2. Mark Attendance\n");
+        printf("3. Display Attendance\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter roll number: ");
+                scanf("%d", &roll);
+                printf("Enter name: ");
+                scanf(" %[^\n]", name);
+                addStudent(roll, name);
+                break;
+            case 2:
+                printf("Enter roll number: ");
+                scanf("%d", &roll);
+                printf("Is present? (1 for Yes, 0 for No): ");
+                scanf("%d", &presence);
+                markAttendance(roll, presence);
+                break;
+            case 3:
+                displayAttendance();
+                break;
+            case 4:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    } while (choice != 4);
+
+    freeList();
+    return 0;
+}
